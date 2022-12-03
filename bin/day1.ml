@@ -12,5 +12,20 @@ let max_calories calories =
     | [] -> buff
   in aux (-1) calories;;
 
+let max3 list =
+  let rec aux (m1, m2, m3) = function
+    | [] -> (m1, m2, m3);
+    | h::t when h > m1 -> aux (h, m1, m2) t;
+    | h::t when h > m2 -> aux (m1, h, m2) t;
+    | h::t when h > m3 -> aux (m1, m2, h) t;
+    | _::t -> aux (m1, m2, m3) t
+  in aux (-1, -1, -1) list;;
+
+let sum3 = function
+  | (x, y, z) -> x + y + z;;
+
 let () =
-  "files/day1.txt" |> Aoc_2k22.read_lines |> group_calories |> max_calories |> print_int;;
+  let grouped = "files/day1.txt" |> Aoc_2k22.read_lines |> group_calories in
+  grouped |> max_calories |> print_int;
+  print_endline "";
+  grouped |> max3 |> sum3 |> print_int;;
