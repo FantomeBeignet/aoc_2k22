@@ -15,7 +15,7 @@ let shape_to_score = function
   | Paper -> 2;
   | Scissors -> 3;;
 
-let parse_line line =
+let parse_line1 line =
   (String.get line 0 |> letter_to_shape, String.get line 2 |> letter_to_shape);; 
 
 let get_outcome = function
@@ -35,5 +35,25 @@ let outcome_to_score = function
 let score_match duel =
   shape_to_score (snd duel) + (get_outcome duel |> outcome_to_score);;
 
+let letter_to_outcome = function
+  | 'X' -> Loss;
+  | 'Y' -> Draw;
+  | 'Z' -> Win;
+  | _ -> raise (Wrong_shape "Unknown strat");;
+
+let parse_line2 line =
+  (String.get line 0 |> letter_to_shape, String.get line 2 |> letter_to_outcome);; 
+
+let outcome_to_strategy = function
+  | Rock, Win | Scissors, Loss | Paper, Draw -> Paper
+  | Paper, Win | Rock, Loss | Scissors, Draw -> Scissors
+  | Scissors, Win | Rock, Draw | Paper, Loss -> Rock
+
+let strat1_to_strat2 strat =
+  (fst strat, outcome_to_strategy strat);;
+
 let () =
-  "files/day2.txt" |> Aoc_2k22.read_lines |> List.map parse_line |> List.map score_match |> List.fold_left (fun a x -> a + x) 0 |> print_int;;
+  let parsed = "files/day2.txt" |> Aoc_2k22.read_lines in
+  parsed |> List.map parse_line1 |> List.map score_match |> List.fold_left (fun a x -> a + x) 0 |> print_int;
+  print_endline "";
+  parsed |> List.map parse_line2 |> List.map strat1_to_strat2 |> List.map score_match |> List.fold_left (fun a x -> a + x) 0 |> print_int;;
