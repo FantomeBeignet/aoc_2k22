@@ -1,4 +1,4 @@
 (executables
- (public_names aoc_2k22 day1)
- (names main day1)
+ (public_names aoc_2k22 day1 day2)
+ (names main day1 day2)
  (libraries aoc_2k22))
