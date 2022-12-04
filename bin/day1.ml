@@ -27,5 +27,5 @@ let sum3 = function
 let () =
   let grouped = "files/day1.txt" |> Aoc_2k22.read_lines |> group_calories in
   grouped |> max_calories |> print_int;
-  print_endline "";
+  print_newline ();
   grouped |> max3 |> sum3 |> print_int;;

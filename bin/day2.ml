@@ -2,13 +2,11 @@ type shape = Rock | Paper | Scissors;;
 
 type outcome = Win | Draw | Loss;;
 
-exception Wrong_shape of string;;
-
 let letter_to_shape = function
   | 'A' | 'X' ->  Rock;
   | 'B' | 'Y' ->  Paper;
   | 'C' | 'Z' -> Scissors;
-  | _ -> raise (Wrong_shape "Unknown shape");;
+  | _ -> failwith "Unknown shape";;
 
 let shape_to_score = function
   | Rock -> 1;
@@ -39,7 +37,7 @@ let letter_to_outcome = function
   | 'X' -> Loss;
   | 'Y' -> Draw;
   | 'Z' -> Win;
-  | _ -> raise (Wrong_shape "Unknown strat");;
+  | _ -> failwith "Unknown strat";;
 
 let parse_line2 line =
   (String.get line 0 |> letter_to_shape, String.get line 2 |> letter_to_outcome);; 
@@ -55,5 +53,5 @@ let strat1_to_strat2 strat =
 let () =
   let parsed = "files/day2.txt" |> Aoc_2k22.read_lines in
   parsed |> List.map parse_line1 |> List.map score_match |> List.fold_left (fun a x -> a + x) 0 |> print_int;
-  print_endline "";
+  print_newline ();
   parsed |> List.map parse_line2 |> List.map strat1_to_strat2 |> List.map score_match |> List.fold_left (fun a x -> a + x) 0 |> print_int;;
