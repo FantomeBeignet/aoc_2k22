@@ -29,8 +29,25 @@ let apply_move stacks move =
     Stack.push popped (Array.get stacks (move.to_stack))
   done
 
+let apply_move2 stacks move = 
+  let temp_stack = Stack.create () in
+  for _ = 1 to move.qty do
+    let popped = Stack.pop (Array.get stacks (move.from_stack)) in
+    Stack.push popped temp_stack
+  done;
+  while not (Stack.is_empty temp_stack) do
+    let popped = Stack.pop temp_stack in
+    Stack.push popped (Array.get stacks (move.to_stack))
+  done;;
+      
+
 let () =
-  let stacks = (Array.init 9 (fun _ -> (Stack.create ()))) in
-  "files/day5_init.txt" |> Aoc_2k22.read_lines |> List.rev |> List.map split_line_in_slots |> List.iter (line_to_stacks stacks);
-  "files/day5_steps.txt" |> Aoc_2k22.read_lines |> List.map parse_move |> List.iter (apply_move stacks);
-  Array.iter (fun s -> print_char (Stack.top s)) stacks;;
+  let stacks1 = (Array.init 9 (fun _ -> (Stack.create ()))) in
+  "files/day5_init.txt" |> Aoc_2k22.read_lines |> List.rev |> List.map split_line_in_slots |> List.iter (line_to_stacks stacks1);
+  "files/day5_steps.txt" |> Aoc_2k22.read_lines |> List.map parse_move |> List.iter (apply_move stacks1);
+  Array.iter (fun s -> print_char (Stack.top s)) stacks1;
+  print_newline ();
+  let stacks2 = (Array.init 9 (fun _ -> (Stack.create ()))) in
+  "files/day5_init.txt" |> Aoc_2k22.read_lines |> List.rev |> List.map split_line_in_slots |> List.iter (line_to_stacks stacks2);
+  "files/day5_steps.txt" |> Aoc_2k22.read_lines |> List.map parse_move |> List.iter (apply_move2 stacks2);
+  Array.iter (fun s -> print_char (Stack.top s)) stacks2;;
