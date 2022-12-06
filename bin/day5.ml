@@ -1,53 +1,69 @@
-type move = {qty : int; from_stack : int; to_stack : int};;
+type move = { qty : int; from_stack : int; to_stack : int }
 
 let split_line_in_slots line =
   let rec aux buff line =
     match String.length line with
-    | a when a > 3 -> aux ((String.get line 1)::buff) (String.sub line 4 (String.length line - 4));
-    | a when a = 3 -> ((String.get line 1)::buff);
+    | a when a > 3 ->
+        aux
+          (String.get line 1 :: buff)
+          (String.sub line 4 (String.length line - 4))
+    | a when a = 3 -> String.get line 1 :: buff
     | _ -> failwith "What"
-  in List.rev (aux [] line);;
+  in
+  List.rev (aux [] line)
 
 let line_to_stacks stack_arr line =
-  let add_to_stack arr i elt =
-    Stack.push elt (Array.get arr i)
-  in 
+  let add_to_stack arr i elt = Stack.push elt (Array.get arr i) in
   let rec aux index = function
-    | h::t when h = ' ' -> aux (index + 1) t;
-    | h::t -> add_to_stack stack_arr index h; aux (index + 1) t;
+    | h :: t when h = ' ' -> aux (index + 1) t
+    | h :: t ->
+        add_to_stack stack_arr index h;
+        aux (index + 1) t
     | [] -> ()
-  in aux 0 line;;
+  in
+  aux 0 line
 
 let parse_move move =
-  let move_pattern = Str.regexp {|move\ \([0-9]+\)\ from\ \([0-9]+\)\ to\ \([0-9]+\)|} in
+  let move_pattern =
+    Str.regexp {|move\ \([0-9]+\)\ from\ \([0-9]+\)\ to\ \([0-9]+\)|}
+  in
   let _ = Str.string_match move_pattern move 0 in
-  {qty = int_of_string (Str.matched_group 1 move); from_stack = int_of_string (Str.matched_group 2 move) - 1; to_stack = int_of_string (Str.matched_group 3 move) - 1};;
-  
+  {
+    qty = int_of_string (Str.matched_group 1 move);
+    from_stack = int_of_string (Str.matched_group 2 move) - 1;
+    to_stack = int_of_string (Str.matched_group 3 move) - 1;
+  }
+
 let apply_move stacks move =
   for _ = 1 to move.qty do
-    let popped = Stack.pop (Array.get stacks (move.from_stack)) in
-    Stack.push popped (Array.get stacks (move.to_stack))
+    let popped = Stack.pop (Array.get stacks move.from_stack) in
+    Stack.push popped (Array.get stacks move.to_stack)
   done
 
-let apply_move2 stacks move = 
+let apply_move2 stacks move =
   let temp_stack = Stack.create () in
   for _ = 1 to move.qty do
-    let popped = Stack.pop (Array.get stacks (move.from_stack)) in
+    let popped = Stack.pop (Array.get stacks move.from_stack) in
     Stack.push popped temp_stack
   done;
   while not (Stack.is_empty temp_stack) do
     let popped = Stack.pop temp_stack in
-    Stack.push popped (Array.get stacks (move.to_stack))
-  done;;
-      
+    Stack.push popped (Array.get stacks move.to_stack)
+  done
 
 let () =
-  let stacks1 = (Array.init 9 (fun _ -> (Stack.create ()))) in
-  "files/day5_init.txt" |> Aoc_2k22.read_lines |> List.rev |> List.map split_line_in_slots |> List.iter (line_to_stacks stacks1);
-  "files/day5_steps.txt" |> Aoc_2k22.read_lines |> List.map parse_move |> List.iter (apply_move stacks1);
+  let stacks1 = Array.init 9 (fun _ -> Stack.create ()) in
+  "files/day5_init.txt" |> Aoc_2k22.read_lines |> List.rev
+  |> List.map split_line_in_slots
+  |> List.iter (line_to_stacks stacks1);
+  "files/day5_steps.txt" |> Aoc_2k22.read_lines |> List.map parse_move
+  |> List.iter (apply_move stacks1);
   Array.iter (fun s -> print_char (Stack.top s)) stacks1;
   print_newline ();
-  let stacks2 = (Array.init 9 (fun _ -> (Stack.create ()))) in
-  "files/day5_init.txt" |> Aoc_2k22.read_lines |> List.rev |> List.map split_line_in_slots |> List.iter (line_to_stacks stacks2);
-  "files/day5_steps.txt" |> Aoc_2k22.read_lines |> List.map parse_move |> List.iter (apply_move2 stacks2);
-  Array.iter (fun s -> print_char (Stack.top s)) stacks2;;
+  let stacks2 = Array.init 9 (fun _ -> Stack.create ()) in
+  "files/day5_init.txt" |> Aoc_2k22.read_lines |> List.rev
+  |> List.map split_line_in_slots
+  |> List.iter (line_to_stacks stacks2);
+  "files/day5_steps.txt" |> Aoc_2k22.read_lines |> List.map parse_move
+  |> List.iter (apply_move2 stacks2);
+  Array.iter (fun s -> print_char (Stack.top s)) stacks2
